@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    tools {
+        maven 'MAVEN_HOME'
+    }
+    triggers {
+        pollSCM('* * * * *')
+    }
+    options{
+        timestamps()
+    }
+    stages {
+        stage ('clone') {
+            steps {
+                git branch: 'develop', credentialsId: 'github', url: 'https://github.com/narayana3619/tech_mahindra.git'
+            }
+        }
+        stage ('build') {
+            steps {
+                sh "mvn clean package"
+            }
+        }
+        stage ('sonar') {
+            steps {
+                sh "mvn sonar:sonar"
+            }
+        }
+        
+        stage ('nexus') {
+            steps {
+                sh "mvn deploy"
+            
+            }
+        }
+        stage ('tomcat') {
+            steps {
+                sshagent(['b38facf8-9203-4ed2-a3cd-4b754e55fd6d']) {
+                    sh "scp -o StrictHostKeyChecking=no target/*.war ec2-user@13.235.245.223:/opt/tomcat/webapps"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            emailext body: 'build over scripted way', subject: 'build-over scripted way', to: 'swamy.visit@gmail.com'
+        }
+    }
+}
