@@ -28,8 +28,8 @@
 </dependencies>
 <distributionManagement>
   <repository>
-    <id>swamy</id>
-    <url>http://65.1.64.85:8081/repository/techm/</url>
+    <id>tech</id>
+    <url>http://35.90.164.30:8081/repository/tech/</url>
   </repository>
 </distributionManagement>
 
